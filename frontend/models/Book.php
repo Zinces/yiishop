@@ -17,7 +17,7 @@ class Book extends ActiveRecord{
             [['name','student_id','sn','status','detail'],'required'],
             ['price','integer'],
             ['imgFile','file','extensions'=>['jpg','png','gif'],'skipOnEmpty'=>false,'on'=>['aa']],
-            ['code','captcha','captchaAction'=>'user/captcha','on'=>'aa'],
+            ['code','captcha','captchaAction'=>'user/captcha','on'=>['aa']],
         ];
     }
     public function attributeLabels()

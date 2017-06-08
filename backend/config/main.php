@@ -12,11 +12,16 @@ return [
     'controllerNamespace' => 'backend\controllers',
     'bootstrap' => ['log'],
     'modules' => [],
+    'language'=>'zh-CN',
+    'defaultRoute'=>'',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
         ],
         'user' => [
+            //默认登陆地址
+            'loginUrl'=>['account/login'],
+            //设置实现认证接口的类
             'identityClass' => 'common\models\User',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
@@ -37,14 +42,15 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
+
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
+            //'suffix'=>'.html',//伪静态后缀
             'rules' => [
             ],
         ],
-        */
+
     ],
     'params' => $params,
 ];

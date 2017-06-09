@@ -46,11 +46,11 @@ class Article_category extends \yii\db\ActiveRecord
     {
         return [
             'id' => 'ID',
-            'name' => '文章名称',
-            'intro' => '文章简介',
-            'sort' => '文章排序',
-            'status' => '文章状态',
-            'is_help' => '文章类型',
+            'name' => '文章分类名称',
+            'intro' => '文章分类简介',
+            'sort' => '文章分类排序',
+            'status' => '文章分类状态',
+            'is_help' => '文章分类类型',
         ];
     }
 }

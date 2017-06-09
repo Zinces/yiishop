@@ -16,7 +16,7 @@
             <td><?=$model->sort?></td>
             <td><?=\backend\models\Article::$statusOptions[$model->status]?></td>
             <td><?=date('Y-m-d H:i:s',$model->create_time)?></td>
-            <td><?=\yii\bootstrap\Html::a('修改',['article/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['article/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?=\yii\bootstrap\Html::a('查看',['article/sel','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?> <?=\yii\bootstrap\Html::a('修改',['article/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['article/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
         </tr>
     <?php endforeach;?>
 </table>

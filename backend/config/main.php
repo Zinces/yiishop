@@ -50,6 +50,14 @@ return [
             'rules' => [
             ],
         ],
+        'qiniu'=>[
+            'class'=>\backend\components\Qiniu::className(),
+            'up_host' => 'http://up-z2.qiniu.com',
+            'accessKey'=>'mgoLMhfeeY3i71Yhz5Iw7xW_C70-ec60T3we1uYC',
+            'secretKey'=>'38ZjcZ26Z8iIZVsc06EIdGjnrWLJ00Ab5hdSuAtr',
+            'bucket'=>'yiishop',
+            'domain'=>'http://or9p5sqr2.bkt.clouddn.com/',
+        ]
 
     ],
     'params' => $params,

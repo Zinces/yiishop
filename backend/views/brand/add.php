@@ -40,7 +40,7 @@ EOF
     ]
 ]);
 if($model->logo){
-    echo \yii\helpers\Html::img('@web'.$model->logo,['id'=>'img_logo','height'=>40]);
+    echo \yii\helpers\Html::img($model->logo,['id'=>'img_logo','height'=>40]);
 }else{
     echo \yii\helpers\Html::img('',['style'=>'display:none','id'=>'img_logo','height'=>40]);
 }

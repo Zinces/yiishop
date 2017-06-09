@@ -6,6 +6,7 @@ use backend\models\Brand;
 use yii\web\Request;
 use yii\web\UploadedFile;
 use xj\uploadify\UploadAction;
+
 class BrandController extends \yii\web\Controller
 {
     public function actionIndex()
@@ -102,10 +103,17 @@ class BrandController extends \yii\web\Controller
                 'afterValidate' => function (UploadAction $action) {},
                 'beforeSave' => function (UploadAction $action) {},
                 'afterSave' => function (UploadAction $action) {
+                    $imgUrl= $action->getWebUrl();
                     $action->output['fileUrl'] = $action->getWebUrl();
-                    $action->getFilename(); // "image/yyyymmddtimerand.jpg"
+                    //调用七牛云的组件，将图片上传到七牛云
+                    $qiniu=\Yii::$app->qiniu;
+                    $qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
+                    //获取图片在七牛云的地址
+                    $url = $qiniu->getLink($imgUrl);
+                    $action->output['fileUrl']=$url;
+                   /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"
                     $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
-                    $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"
+                    $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
                 },
             ],
             'captcha' => [

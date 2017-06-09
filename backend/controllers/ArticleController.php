@@ -82,5 +82,12 @@ class ArticleController extends \yii\web\Controller
         $model_articledetail=Article_detail::findOne(['article_id'=>$id]);
         return $this->render('select',['model_article'=>$model_article,'model_articledetail'=>$model_articledetail]);
     }
-
+    public function actions()
+    {
+        return [
+            'upload' => [
+                'class' => 'kucha\ueditor\UEditorAction',
+            ]
+        ];
+    }
 }

@@ -16,7 +16,7 @@ use Yii;
  */
 class Brand extends \yii\db\ActiveRecord
 {
-    public $imgFile;
+    //public $imgFile;
     public $code;
     static public $statusOptions=[-1=>'删除',0=>'隐藏',1=>'正常'];
     /**
@@ -38,7 +38,7 @@ class Brand extends \yii\db\ActiveRecord
             [['sort', 'status'], 'integer'],
             [['name'], 'string', 'max' => 50],
             [['logo'], 'string', 'max' => 255],
-            ['imgFile','file','extensions'=>['gif','png','jpg'],'on'=>['add']],
+           // ['imgFile','file','extensions'=>['gif','png','jpg'],'on'=>['add']],
             ['code','captcha','captchaAction'=>'brand/captcha','on'=>['add']],
         ];
     }
@@ -55,7 +55,7 @@ class Brand extends \yii\db\ActiveRecord
             'logo' => '名牌LOGO',
             'sort' => '名牌排序',
             'status' => '名牌状态',
-            'imgFile'=>'logo',
+            //'imgFile'=>'logo',
             'code'=>false,
         ];
     }

@@ -2,68 +2,36 @@
 
 namespace backend\controllers;
 
-use backend\models\Brand;
-use yii\web\Request;
-use yii\web\UploadedFile;
-use xj\uploadify\UploadAction;
 
-class BrandController extends \yii\web\Controller
+use xj\uploadify\UploadAction;
+use backend\models\Brand;
+use backend\models\Goods;
+use yii\web\Request;
+
+class GoodsController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $models=Brand::find()->all();
+        $models=Goods::find()->all();
         return $this->render('index',['models'=>$models]);
     }
     public function actionAdd(){
-        $model=new  Brand();
-        $request=new Request();
-        $model->setScenario('add');
-        if($request->isPost){
-            $model->load($request->post());
-            //$model->imgFile=UploadedFile::getInstance($model,'imgFile');
-            if($model->validate()){
-               /* if($model->imgFile){
-                   $fileName='/images/brand/'.uniqid().'.'.$model->imgFile->extension;
-                    $model->imgFile->saveAs(\Yii::getAlias('@webroot').$fileName,false);
-                    $model->logo=$fileName;
-                }*/
-                $model->save(false);
-               // \Yii::$app->session->getFlash('success','品牌添加成功');
-                return $this->redirect(['brand/index']);
-            }else{
-                var_dump($model->getErrors());exit;
-            }
-        }
-        
-        return $this->render('add',['model'=>$model]);
-    }
-    public function actionEdit($id){
-        $model=Brand::findOne(['id'=>$id]);
+        $model=new Goods();
+        $bra=Brand::find()->all();
         $request=new Request();
         if($request->isPost){
             $model->load($request->post());
-            //$model->imgFile=UploadedFile::getInstance($model,'imgFile');
             if($model->validate()){
-                /*if($model->imgFile){
-                    $fileName='/images/brand/'.uniqid().'.'.$model->imgFile->extension;
-                    $model->imgFile->saveAs(\Yii::getAlias('@webroot').$fileName,false);
-                    $model->logo=$fileName;
-                }*/
+                $model->create_time=time();
                 $model->save(false);
-                \Yii::$app->session->getFlash('success','品牌添加成功');
-                return $this->redirect(['brand/index']);
-            }else{
-                var_dump($model->getErrors());exit;
+                $count=[];
+                foreach ($bra as $b){
+                    $count[$b['id']]=$b['intro'];
+                }
+                return $this->redirect(['goods/index']);
             }
         }
-
-        return $this->render('add',['model'=>$model]);
-    }
-    public function actionDel($id){
-        $model=Brand::findOne(['id'=>$id]);
-        $model->status='-1';
-        $model->save();
-        return $this->redirect(['brand/index']);
+        return $this->render('add',['model'=>$model,'bra'=>$bra]);
     }
     public function actions() {
         return [
@@ -78,11 +46,11 @@ class BrandController extends \yii\web\Controller
                 //END METHOD
                 //BEGIN CLOSURE BY-HASH
                 'overwriteIfExist' => true,
-               /* 'format' => function (UploadAction $action) {
-                    $fileext = $action->uploadfile->getExtension();
-                    $filename = sha1_file($action->uploadfile->tempName);
-                    return "{$filename}.{$fileext}";
-                },*/
+                /* 'format' => function (UploadAction $action) {
+                     $fileext = $action->uploadfile->getExtension();
+                     $filename = sha1_file($action->uploadfile->tempName);
+                     return "{$filename}.{$fileext}";
+                 },*/
                 //END CLOSURE BY-HASH
                 //BEGIN CLOSURE BY TIME
                 'format' => function (UploadAction $action) {
@@ -111,19 +79,43 @@ class BrandController extends \yii\web\Controller
                     //获取图片在七牛云的地址
                     $url = $qiniu->getLink($imgUrl);
                     $action->output['fileUrl']=$url;
-                   /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"
-                    $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
-                    $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
+                    /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"
+                     $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
+                     $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
                 },
             ],
-            'captcha' => [
+           /* 'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
                 'minLength'=>4,
                 'maxLength'=>4,
-            ]
+            ]*/
         ];
-       
+
+    }
+    public function actionEdit($id){
+        $model=Goods::findOne(['id'=>$id]);
+        $bra=Brand::find()->all();
+        $request=new Request();
+        if($request->isPost){
+            $model->load($request->post());
+            if($model->validate()){
+                $model->create_time=time();
+                $model->save(false);
+                $count=[];
+                foreach ($bra as $b){
+                    $count[$b['id']]=$b['intro'];
+                }
+                return $this->redirect(['goods/index']);
+            }
+        }
+        return $this->render('add',['model'=>$model,'bra'=>$bra]);
+    }
+    public function actionDel($id){
+        $model=Goods::findOne(['id'=>$id]);
+        $model->status=0;
+        $model->save();
+        return $this->redirect(['goods/index']);
     }
 
 }

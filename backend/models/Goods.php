@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "goods".
@@ -71,5 +72,11 @@ class Goods extends \yii\db\ActiveRecord
             'sort' => '排序',
             'create_time' => '添加时间',
         ];
+    }
+    public function getGood_category(){
+        return $this->hasOne(Goodcategory::className(),['id'=>'good_category_id']);
+    }
+    public function getGoods_intro(){
+        return $this->hasOne(Goods_intro::className(),['goods_id'=>'id']);
     }
 }

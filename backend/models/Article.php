@@ -23,8 +23,8 @@ class Article extends \yii\db\ActiveRecord
         return $this->hasOne(Article_category::className(),['id'=>'article_category_id']);
     }
     public static function getArticle_categorys(){
-        return ArrayHelper::map(Article_category::find()->where(['status'=>1])->asArray()->all(),'id','name');
-    }
+    return ArrayHelper::map(Article_category::find()->where(['status'=>1])->asArray()->all(),'id','name');
+}
     public function getArticle_detail(){
         return $this->hasOne(Article_detail::className(),['article_id'=>'id']);
     }

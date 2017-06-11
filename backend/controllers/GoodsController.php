@@ -3,9 +3,12 @@
 namespace backend\controllers;
 
 
+use backend\models\Goodcategory;
+use backend\models\Goods_intro;
 use xj\uploadify\UploadAction;
 use backend\models\Brand;
 use backend\models\Goods;
+use yii\helpers\ArrayHelper;
 use yii\web\Request;
 
 class GoodsController extends \yii\web\Controller
@@ -15,15 +18,26 @@ class GoodsController extends \yii\web\Controller
         $models=Goods::find()->all();
         return $this->render('index',['models'=>$models]);
     }
+    public function actionGoodcategory()
+    {
+        $models=Goodcategory::find()->all();
+        return $this->render('index',['models'=>$models]);
+    }
     public function actionAdd(){
         $model=new Goods();
         $bra=Brand::find()->all();
+        $goods=new Goods_intro();
         $request=new Request();
         if($request->isPost){
             $model->load($request->post());
-            if($model->validate()){
+            $goods->load($request->post());
+            if($model->validate() && $goods->validate()){
                 $model->create_time=time();
                 $model->save(false);
+                if($model){
+                    $goods->goods_id=$model->id;
+                    $goods->save();
+                }
                 $count=[];
                 foreach ($bra as $b){
                     $count[$b['id']]=$b['intro'];
@@ -31,7 +45,8 @@ class GoodsController extends \yii\web\Controller
                 return $this->redirect(['goods/index']);
             }
         }
-        return $this->render('add',['model'=>$model,'bra'=>$bra]);
+        $options = ArrayHelper::merge([['id'=>0,'name'=>'顶级分类','parent_id'=>0]],Goodcategory::find()->asArray()->all());
+        return $this->render('add',['model'=>$model,'bra'=>$bra,'options'=>$options,'goods'=>$goods]);
     }
     public function actions() {
         return [
@@ -90,21 +105,27 @@ class GoodsController extends \yii\web\Controller
                 'minLength'=>4,
                 'maxLength'=>4,
             ]*/
+            'upload' => [
+                'class' => 'kucha\ueditor\UEditorAction',
+            ],
         ];
 
     }
     public function actionEdit($id){
         $model=Goods::findOne(['id'=>$id]);
         $bra=Brand::find()->all();
+        $goods=Goods_intro::findOne(['goods_id'=>$id]);
         $request=new Request();
         if($request->isPost){
             $model->load($request->post());
-
-            if($model->validate()){
+            $goods->load($request->post());
+            if($model->validate() && $goods->validate()){
                 $model->create_time=time();
-
-                
-                $model->save();
+                $model->save(false);
+                if($model){
+                    $goods->goods_id=$model->id;
+                    $goods->save();
+                }
                 $count=[];
                 foreach ($bra as $b){
                     $count[$b['id']]=$b['intro'];
@@ -112,7 +133,8 @@ class GoodsController extends \yii\web\Controller
                 return $this->redirect(['goods/index']);
             }
         }
-        return $this->render('add',['model'=>$model,'bra'=>$bra]);
+        $options = ArrayHelper::merge([['id'=>0,'name'=>'顶级分类','parent_id'=>0]],Goodcategory::find()->asArray()->all());
+        return $this->render('add',['model'=>$model,'bra'=>$bra,'options'=>$options,'goods'=>$goods]);
     }
     public function actionDel($id){
         $model=Goods::findOne(['id'=>$id]);
@@ -120,5 +142,9 @@ class GoodsController extends \yii\web\Controller
         $model->save();
         return $this->redirect(['goods/index']);
     }
-
+    public function actionSel($id){
+        $model=Goods_intro::findOne(['goods_id'=>$id]);
+        $models=Goods::findOne(['id'=>$id]);
+        return $this->render('select',['model'=>$model,'models'=>$models]);
+    }
 }

@@ -10,7 +10,7 @@ class Good_categoryController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $models=Goodcategory::find()->all();
+        $models=Goodcategory::find()->orderBy('tree,depth')->all();
         return $this->render('index',['models'=>$models]);
     }
     public function actionAdd(){

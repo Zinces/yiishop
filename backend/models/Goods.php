@@ -47,6 +47,7 @@ class Goods extends \yii\db\ActiveRecord
             [['market_price', 'shop_price'], 'number'],
             [['name', 'sn'], 'string', 'max' => 20],
             [['logo'], 'string', 'max' => 255],
+            ['shop_price','compare','compareAttribute'=>'market_price','operator'=>'<','message'=>'商品价格要低于市场价格'],
         ];
     }
 

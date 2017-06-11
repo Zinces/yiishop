@@ -3,6 +3,7 @@
 namespace backend\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "article".
@@ -21,6 +22,9 @@ class Article extends \yii\db\ActiveRecord
     public function getArticle_category(){
         return $this->hasOne(Article_category::className(),['id'=>'article_category_id']);
     }
+    public static function getArticle_categorys(){
+        return ArrayHelper::map(Article_category::find()->where(['status'=>1])->asArray()->all(),'id','name');
+    }
     public function getArticle_detail(){
         return $this->hasOne(Article_detail::className(),['article_id'=>'id']);
     }
@@ -38,7 +42,7 @@ class Article extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['name'], 'required'],
+            [['name','article_category_id'], 'required'],
             [['intro'], 'string'],
             [['article_category_id', 'sort', 'status', 'create_time'], 'integer'],
             [['name'], 'string', 'max' => 50],

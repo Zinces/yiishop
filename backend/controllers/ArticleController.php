@@ -21,7 +21,7 @@ class ArticleController extends \yii\web\Controller
     }
     public function actionAdd(){
         $model=new Article();
-        $art=Article_category::find()->all();
+        //$art=Article_category::find()->all();
         $ar=new Article_detail();
         $request=new Request();
         if($request->isPost){
@@ -34,20 +34,21 @@ class ArticleController extends \yii\web\Controller
                     $ar->article_id=$model->id;
                     $ar->save();
                 }
+                return $this->redirect(['article/index']);
 
-                $count=[];
+               /* $count=[];
                 foreach ($art as $a){
                     $count[$a['id']]=$a['name'];
                     return $this->redirect(['article/index']);
-                }
+                }*/
             }
         }
 
-        return $this->render('add',['model'=>$model,'art'=>$art,'ar'=>$ar]);
+        return $this->render('add',['model'=>$model,'ar'=>$ar]);
     }
     public function actionEdit($id){
         $model=Article::findOne(['id'=>$id]);
-        $art=Article_category::find()->all();
+        //$art=Article_category::find()->all();
         $ar=Article_detail::findOne(['article_id'=>$id]);
         $request=new Request();
         if($request->isPost){
@@ -61,15 +62,15 @@ class ArticleController extends \yii\web\Controller
                     $ar->save();
                 }
 
-                $count=[];
+               /* $count=[];
                 foreach ($art as $a){
                     $count[$a['id']]=$a['name'];
                     return $this->redirect(['article/index']);
-                }
+                }*/
             }
         }
 
-        return $this->render('add',['model'=>$model,'art'=>$art,'ar'=>$ar]);
+        return $this->render('add',['model'=>$model,'ar'=>$ar]);
     }
     public function actionDel($id){
         $model=Article::findOne(['id'=>$id]);
@@ -90,4 +91,5 @@ class ArticleController extends \yii\web\Controller
             ]
         ];
     }
+
 }

@@ -99,9 +99,12 @@ class GoodsController extends \yii\web\Controller
         $request=new Request();
         if($request->isPost){
             $model->load($request->post());
+
             if($model->validate()){
                 $model->create_time=time();
-                $model->save(false);
+
+                
+                $model->save();
                 $count=[];
                 foreach ($bra as $b){
                     $count[$b['id']]=$b['intro'];

@@ -13,7 +13,7 @@ return [
     'bootstrap' => ['log'],
     'modules' => [],
     'language'=>'zh-CN',
-    'defaultRoute'=>'article',
+    'defaultRoute'=>'goods',
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',

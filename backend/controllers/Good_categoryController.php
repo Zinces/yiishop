@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\Goodcategory;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 use yii\web\NotFoundHttpException;
 
@@ -10,7 +11,14 @@ class Good_categoryController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $models=Goodcategory::find()->orderBy('tree,depth')->all();
+        $query=Goodcategory::find();
+       /* $total=$query->count();//获取总条数
+        $page=new Pagination([
+            'totalCount'=>$total,
+            'defaultPageSize'=>5,
+        ]);*/
+        $models=$query->orderBy('tree,lft')->all();
+        //$models=$query->offset($page->offset)->limit($page->limit)->orderBy('tree,lft')->all();
         return $this->render('index',['models'=>$models]);
     }
     public function actionAdd(){
@@ -46,7 +54,11 @@ class Good_categoryController extends \yii\web\Controller
                 $model->prependTo($parent);
             }else{
                 //添加一级分类
-                $model->makeRoot();
+                if ($model->getOldAttribute('parent_id') == 0){
+                    $model->save();
+                }else{
+                    $model->makeRoot();
+                }
             }
             \Yii::$app->session->setFlash('success','修改成功');
             return $this->redirect(['good_category/index']);
@@ -56,8 +68,5 @@ class Good_categoryController extends \yii\web\Controller
 
         return $this->render('add',['model'=>$model,'options'=>$options]);
     }
-
-  
-
-
+    
 }

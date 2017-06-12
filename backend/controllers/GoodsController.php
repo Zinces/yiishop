@@ -4,19 +4,26 @@ namespace backend\controllers;
 
 
 use backend\models\Goodcategory;
+use backend\models\Goods_day_count;
 use backend\models\Goods_intro;
 use xj\uploadify\UploadAction;
 use backend\models\Brand;
 use backend\models\Goods;
+use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
 use yii\web\Request;
 
 class GoodsController extends \yii\web\Controller
 {
     public function actionIndex()
-    {
-        $models=Goods::find()->all();
-        return $this->render('index',['models'=>$models]);
+    {   $query=Goods::find();
+        $count=$query->count();
+        $page=new Pagination([
+            'totalCount'=>$count,
+            'defaultPageSize'=>2,
+        ]);
+        $models=$query->offset($page->offset)->limit($page->limit)->all();
+        return $this->render('index',['models'=>$models,'page'=>$page]);
     }
     public function actionGoodcategory()
     {
@@ -31,12 +38,25 @@ class GoodsController extends \yii\web\Controller
         if($request->isPost){
             $model->load($request->post());
             $goods->load($request->post());
+            //$goodsday->load($request->post());
             if($model->validate() && $goods->validate()){
+               if($goodsday=Goods_day_count::findOne(['day'=>date('Y-m-d')])){
+                   $count=($goodsday->count)+1;
+                   $model->sn=date('Ymd').str_pad($count,5,'0',STR_PAD_LEFT);
+                   $goodsday->count=($goodsday->count)+1;
+               }else{
+                   $model->sn=date('Ymd').str_pad(1,5,'0',STR_PAD_LEFT);
+                   $goodsday=new Goods_day_count();
+                   $goodsday->day=date('Y-m-d');
+                   $goodsday->count=1;
+               }
                 $model->create_time=time();
                 $model->save(false);
+                $goodsday->save();
                 if($model){
                     $goods->goods_id=$model->id;
                     $goods->save();
+
                 }
                 $count=[];
                 foreach ($bra as $b){

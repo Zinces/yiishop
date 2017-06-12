@@ -32,3 +32,14 @@
         </tr>
     <?php endforeach;?>
 </table>
+<div class="text-center">
+<?php
+echo \yii\widgets\LinkPager::widget([
+   'pagination'=>$page,
+    'firstPageLabel'=>'首页',
+    'prevPageLabel'=>'上一页',
+    'nextPageLabel'=>'下一页',
+    'lastPageLabel'=>'末尾'
+]);
+?>
+</div>

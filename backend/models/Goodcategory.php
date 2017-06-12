@@ -78,5 +78,8 @@ class Goodcategory extends \yii\db\ActiveRecord
     {
         return new GoodcategoryQuery(get_called_class());
     }
+    public function getParent(){
+        return $this->hasOne(self::className(),['id'=>'parent_id']);
+    }
   
 }

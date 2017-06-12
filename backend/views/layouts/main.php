@@ -37,6 +37,7 @@ AppAsset::register($this);
     $menuItems = [
         ['label' => '商品', 'url' => ['/goods/index']],
         ['label' => '品牌', 'url' => ['/brand/index']],
+        ['label' => '商品分类', 'url' => ['/good_category/index']],
         ['label' => '文章', 'url' => ['/article/index']],
     ];
     if (Yii::$app->user->isGuest) {

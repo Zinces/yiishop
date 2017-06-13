@@ -1,3 +1,11 @@
+<div class="text-center">
+<?php
+echo \yii\bootstrap\Html::beginForm(['goods/index'],'get');
+echo \yii\bootstrap\Html::textInput('key');
+echo \yii\bootstrap\Html::submitInput('搜索',['class'=>'btn btn-info btn-xs']);
+echo \yii\bootstrap\Html::endForm();
+?>
+</div>
 <table class="table table-hover table-bordered tab-content">
     <tr>
         <th>商品名称</th>
@@ -41,5 +49,7 @@ echo \yii\widgets\LinkPager::widget([
     'nextPageLabel'=>'下一页',
     'lastPageLabel'=>'末尾'
 ]);
+
+
 ?>
 </div>

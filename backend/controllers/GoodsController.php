@@ -16,7 +16,9 @@ use yii\web\Request;
 class GoodsController extends \yii\web\Controller
 {
     public function actionIndex()
-    {   $query=Goods::find();
+    {
+        $key=isset($_GET['key'])?$_GET['key']:'';
+        $query=Goods::find()->andWhere(['like','name',$key]);
         $count=$query->count();
         $page=new Pagination([
             'totalCount'=>$count,

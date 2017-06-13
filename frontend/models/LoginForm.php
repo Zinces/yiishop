@@ -32,7 +32,7 @@ class LoginForm extends Model{
                 $account->end_time=time();
                 $account->save();
                 \Yii::$app->user->login($account);
-
+                
             }
         }else{
             $this->addError('password','账号或密码不正确');

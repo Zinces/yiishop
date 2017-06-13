@@ -22,7 +22,7 @@ return [
             //默认登陆地址
             'loginUrl'=>['account/login'],
             //设置实现认证接口的类
-            'identityClass' => 'common\models\User',
+            'identityClass' => 'backend\models\Admin',
             'enableAutoLogin' => true,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],

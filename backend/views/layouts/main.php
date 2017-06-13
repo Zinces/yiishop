@@ -41,12 +41,12 @@ AppAsset::register($this);
         ['label' => '文章', 'url' => ['/article/index']],
     ];
     if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => '登录', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => '登录', 'url' => ['/admin/login']];
     } else {
         $menuItems[] = '<li>'
-            . Html::beginForm(['/site/logout'], 'post')
+            . Html::beginForm(['/admin/logout'], 'post')
             . Html::submitButton(
-                '退出 (' . Yii::$app->user->identity->username . ')',
+                '退出 (' . Yii::$app->user->identity->user . ')',
                 ['class' => 'btn btn-link logout']
             )
             . Html::endForm()

@@ -4,6 +4,8 @@ namespace backend\controllers;
 
 use backend\models\Admin;
 use backend\models\LoginForm;
+use backend\models\MpasswordForm;
+use yii\filters\AccessControl;
 use yii\web\Request;
 
 
@@ -38,10 +40,12 @@ class AdminController extends \yii\web\Controller
             $model->load($request->post());
             //var_dump($model);exit;
             if($model->validate()){
-           //var_dump($model);exit;
+                //var_dump($model);exit;
                 $model->save(false);
                 //var_dump($model->getErrors());exit;
                 return $this->redirect(['admin/index']);
+            }else{
+                var_dump($model->getErrors());exit;
             }
         }
         return $this->render('add',['model'=>$model]);
@@ -86,8 +90,40 @@ class AdminController extends \yii\web\Controller
         \Yii::$app->user->logout();
         return $this->redirect(['goods/index']);
     }
-
-
+    public function actionMpassword(){
+        $model=new MpasswordForm();
+        if($model->load(\Yii::$app->request->post()) && $model->validate()){
+                $model->validatePassword();
+                \Yii::$app->user->logout();
+                return $this->redirect(['goods/index']);
+        }
+        return $this->render('mpassword',['model'=>$model]);
+    }
+/*    public function behaviors()
+    {
+        return[
+            'acf'=>[
+                'class'=>AccessControl::className(),
+                'only'=>['login','add','index'],//该过滤器作用的操作，默认所有
+                'rules'=>[
+                    [
+                        'allow'=>true,//是否允许执行
+                        'actions'=>['login'],//指定操作
+                        'roles'=>['?'],//角色？未认证用户，@已认证用户
+                    ],
+                    [
+                        'allow'=>true,//是否允许执行
+                        'actions'=>['add','index'],//指定操作
+                        'roles'=>['@'],//角色？未认证用户，@已认证用户
+//                        'matchCallback'=>function(){
+//                            //return \date('j')==5;//几号可以访问
+//                        }
+                    ],
+                    //其他都禁止执行
+                ],
+            ],
+        ];
+    }*/
 
 
 }

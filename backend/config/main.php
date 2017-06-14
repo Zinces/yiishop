@@ -20,10 +20,11 @@ return [
         ],
         'user' => [
             //默认登陆地址
-            'loginUrl'=>['account/login'],
+            'loginUrl'=>['admin/login'],
             //设置实现认证接口的类
             'identityClass' => 'backend\models\Admin',
             'enableAutoLogin' => true,
+            'authTimeout' => 3600,
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [

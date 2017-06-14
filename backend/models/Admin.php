@@ -48,12 +48,14 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
         return [
             [['user', 'password'], 'required','on'=>['add']],
             [['end_time','status'], 'integer'],
-            [['user', 'end_ip'], 'string', 'max' => 255,'on'=>['add']],
+            [['user', 'end_ip','email'], 'string', 'max' => 255,'on'=>['add']],
             ['code','captcha','captchaAction'=>'admin/captcha'],
             [['password','repassword'],'string','min'=>4,'message'=>'密码太短','on'=>['add']],
             //['repassword','compare','compareAttribute'=>'password']
             ['repassword','compare','compareAttribute'=>'password','message'=>'两次新密码不一致','on'=>['add']],
-            [['end_time','end_ip'], 'string', 'max' => 255]
+            [['end_time','end_ip'], 'string', 'max' => 255,'on'=>['add']],
+            ['email','unique','message'=>'邮箱存在','on'=>['add']],
+            ['email','match','pattern'=>'/\w+([-.]\w+)*@(qq|163|126)\.com/','message'=>'邮箱格式不对','on'=>['add']]
         ];
     }
 
@@ -69,7 +71,8 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             'end_time' => '最后登录时间',
             'end_ip' => '最后登录ip',
             'code'=>false,
-            'repassword'=>'再输一次密码'
+            'repassword'=>'再输一次密码',
+            'email'=>'邮箱',
         ];
     }
 
@@ -107,24 +110,6 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return $this->id;
     }
-
-    /**
-     * Returns a key that can be used to check the validity of a given identity ID.
-     *
-     * The key should be unique for each individual user, and should be persistent
-     * so that it can be used to check the validity of the user identity.
-     *
-     * The space of such keys should be big enough to defeat potential identity attacks.
-     *
-     * This is required if [[User::enableAutoLogin]] is enabled.
-     * @return string a key that is used to check the validity of a given identity ID.
-     * @see validateAuthKey()
-     */
-    public function getAuthKey()
-    {
-        // TODO: Implement getAuthKey() method.
-    }
-
     /**
      * Validates the given auth key.
      *
@@ -133,8 +118,33 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      * @return bool whether the given auth key is valid.
      * @see getAuthKey()
      */
+
+    ////1
     public function validateAuthKey($authKey)
     {
-        // TODO: Implement validateAuthKey() method.
+        return $this->getAuthKey() === $authKey;
     }
+    /**
+     * @inheritdoc
+     */
+    //2
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+    /**
+     * Generates "remember me" authentication key
+     */
+    //3.
+    public function generateAuthKey()
+    {
+        $this->auth_key = Yii::$app->security->generateRandomString();
+    }
+
+
+
+
+
+
+
 }

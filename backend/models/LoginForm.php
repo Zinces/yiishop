@@ -31,9 +31,10 @@ class LoginForm extends Model{
                 if (!\Yii::$app->security->validatePassword($this->password,$admin->password)){
                     $this->addError('password','密码账号不对');
                 }else{
-                    //var_dump($admin);exit;
-                    $admin->save();
-                    \Yii::$app->user->login($admin,$this->cookie?time()*3600*24*7:0);
+                    $admin->generateAuthKey();
+                    $admin->save(false);
+                    $cookie=\Yii::$app->user->authTimeout;
+                    \Yii::$app->user->login($admin,$this->cookie?$cookie:0);
                     //var_dump($this->cookie);exit;
                 }
         }else{

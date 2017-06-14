@@ -1,6 +1,7 @@
 <table class="table table-hover table-bordered">
     <tr>
         <th>用户名</th>
+        <th>用户邮箱</th>
         <th>最后登录时间</th>
         <th>最后登录IP</th>
         <th>状态</th>
@@ -9,6 +10,7 @@
     <?php foreach ($models as $model):?>
     <tr>
         <td><?=$model->user?></td>
+        <td><?=$model->email?></td>
         <td><?=date('Y-m-d H:i:s',$model->end_time)?></td>
         <td><?=$model->end_ip?></td>
         <td><?=\backend\models\Admin::$statusOptisn[$model->status]?></td>

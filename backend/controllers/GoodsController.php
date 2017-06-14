@@ -6,26 +6,35 @@ namespace backend\controllers;
 use backend\models\Goodcategory;
 use backend\models\Goods_day_count;
 use backend\models\Goods_intro;
+use backend\models\Goodsgallery;
+use backend\models\GoodssearchForm;
 use xj\uploadify\UploadAction;
 use backend\models\Brand;
 use backend\models\Goods;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
+use yii\web\NotAcceptableHttpException;
+use yii\web\NotFoundHttpException;
 use yii\web\Request;
 
 class GoodsController extends \yii\web\Controller
 {
     public function actionIndex()
     {
-        $key=isset($_GET['key'])?$_GET['key']:'';
-        $query=Goods::find()->andWhere(['like','name',$key]);
+        $model=new GoodssearchForm();
+        $query=Goods::find();
+
+        $model->search($query);
+        /*$key=isset($_GET['key'])?$_GET['key']:'';
+        $query=Goods::find()->andWhere(['like','name',$key]);*/
         $count=$query->count();
         $page=new Pagination([
             'totalCount'=>$count,
             'defaultPageSize'=>2,
         ]);
         $models=$query->offset($page->offset)->limit($page->limit)->all();
-        return $this->render('index',['models'=>$models,'page'=>$page]);
+        return $this->render('index',['models'=>$models,'page'=>$page,'model'=>$model]);
+
     }
     public function actionGoodcategory()
     {
@@ -72,6 +81,14 @@ class GoodsController extends \yii\web\Controller
     }
     public function actions() {
         return [
+            'upload' => [
+                'class' => 'kucha\ueditor\UEditorAction',
+                'config' => [
+                    "imageUrlPrefix"  => "",//图片访问路径前缀
+                    "imagePathFormat" => "/upload/{yyyy}{mm}{dd}/{time}{rand:6}" ,//上传保存路径
+                    "imageRoot" => \Yii::getAlias("@webroot"),
+                ],
+            ],
             's-upload' => [
                 'class' => UploadAction::className(),
                 'basePath' => '@webroot/upload',
@@ -108,7 +125,16 @@ class GoodsController extends \yii\web\Controller
                 'afterValidate' => function (UploadAction $action) {},
                 'beforeSave' => function (UploadAction $action) {},
                 'afterSave' => function (UploadAction $action) {
-                    $imgUrl= $action->getWebUrl();
+                    //图片上传成功的同时，将图片和商品关联起来
+                    $model = new Goodsgallery();
+                    $model->goods_id = \Yii::$app->request->post('goods_id');
+                    $model->path = $action->getWebUrl();
+                    $model->save();
+                    $action->output['fileUrl'] = $model->path;
+
+
+
+                   $imgUrl= $action->getWebUrl();
                     $action->output['fileUrl'] = $action->getWebUrl();
                     //调用七牛云的组件，将图片上传到七牛云
                     $qiniu=\Yii::$app->qiniu;
@@ -116,6 +142,10 @@ class GoodsController extends \yii\web\Controller
                     //获取图片在七牛云的地址
                     $url = $qiniu->getLink($imgUrl);
                     $action->output['fileUrl']=$url;
+
+
+
+
                     /* $action->getFilename(); // "image/yyyymmddtimerand.jpg"
                      $action->getWebUrl(); //  "baseUrl + filename, /upload/image/yyyymmddtimerand.jpg"
                      $action->getSavePath(); // "/var/www/htdocs/upload/image/yyyymmddtimerand.jpg"*/
@@ -168,5 +198,22 @@ class GoodsController extends \yii\web\Controller
         $model=Goods_intro::findOne(['goods_id'=>$id]);
         $models=Goods::findOne(['id'=>$id]);
         return $this->render('select',['model'=>$model,'models'=>$models]);
+    }
+    public function actionGallery($id){
+        $goods=Goods::findOne(['id'=>$id]);
+        if($goods == null){
+            throw new NotFoundHttpException('商品不存在');
+        }
+        return $this->render('gallery',['goods'=>$goods]);
+    }
+    public function actionDelgallery(){
+          $id=\Yii::$app->request->post('id');
+           $model=Goodsgallery::findOne(['id'=>$id]);
+        if($model && $model->delete()){
+            return 'success';
+        }else{
+            return 'false';
+        }
+
     }
 }

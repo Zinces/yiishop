@@ -79,4 +79,7 @@ class Goods extends \yii\db\ActiveRecord
     public function getGoods_intro(){
         return $this->hasOne(Goods_intro::className(),['goods_id'=>'id']);
     }
+    public function getGalleries(){
+          return $this->hasMany(Goodsgallery::className(),['goods_id'=>'id']);
+    }
 }

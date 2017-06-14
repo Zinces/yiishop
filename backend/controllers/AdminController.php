@@ -38,7 +38,7 @@ class AdminController extends \yii\web\Controller
             $model->load($request->post());
             //var_dump($model);exit;
             if($model->validate()){
- //var_dump($model);exit;
+           //var_dump($model);exit;
                 $model->save(false);
                 //var_dump($model->getErrors());exit;
                 return $this->redirect(['admin/index']);

@@ -11,6 +11,15 @@ use yii\web\Request;
 
 class AdminController extends \yii\web\Controller
 {
+    public function actionInit(){
+        $admin=new Admin();
+        $admin->user='小媳';
+        $admin->password='5201314Z';
+        $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
+        $admin->email='305977606@qq.com';
+        $admin->save();
+        return $this->redirect(['admin/login']);
+    }
     public function actionIndex()
     {
         $models=Admin::find()->all();

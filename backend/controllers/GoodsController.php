@@ -134,11 +134,20 @@ class GoodsController extends \yii\web\Controller
 
 
 
-                   $imgUrl= $action->getWebUrl();
+                   /*$imgUrl= $action->getWebUrl();
                     $action->output['fileUrl'] = $action->getWebUrl();
                     //调用七牛云的组件，将图片上传到七牛云
                     $qiniu=\Yii::$app->qiniu;
                     $qiniu->uploadFile(\Yii::getAlias('@webroot').$imgUrl,$imgUrl);
+                    //获取图片在七牛云的地址
+                    $url = $qiniu->getLink($imgUrl);
+                    $action->output['fileUrl']=$url;*/
+
+                    $imgUrl= $action->getSavePath();
+                    //$action->output['fileUrl'] = $action->getWebUrl();
+                    //调用七牛云的组件，将图片上传到七牛云
+                    $qiniu=\Yii::$app->qiniu;
+                    $qiniu->uploadFile($imgUrl,$imgUrl);
                     //获取图片在七牛云的地址
                     $url = $qiniu->getLink($imgUrl);
                     $action->output['fileUrl']=$url;

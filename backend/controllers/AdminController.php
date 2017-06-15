@@ -14,7 +14,7 @@ class AdminController extends \yii\web\Controller
     public function actionInit(){
         $admin=new Admin();
         $admin->user='小媳';
-        $admin->password='5201314Z';
+        $admin->password='11111';
         $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
         $admin->email='305977606@qq.com';
         $admin->save();

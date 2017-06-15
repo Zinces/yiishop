@@ -11,7 +11,7 @@ class MpasswordForm extends Model{
     {
         return[
             [['old_password','password','repassword'],'required'],
-            [['password','repassword'],'string','min'=>4,'message'=>'密码长度不够'],
+            [['password','repassword'],'string','length'=>[4],'tooShort'=>'密码长度不够','message'=>123],
             ['code','captcha','captchaAction'=>'admin/captcha'],
             ['repassword','compare','compareAttribute'=>'password','message'=>'两次新密码不一致'],
             ['repassword','validatePassword'],

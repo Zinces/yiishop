@@ -50,8 +50,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             [['end_time','status'], 'integer'],
             [['user', 'end_ip','email'], 'string', 'max' => 255,'on'=>['add']],
             ['code','captcha','captchaAction'=>'admin/captcha'],
-            [['password','repassword'],'string','min'=>4,'message'=>'密码太短','on'=>['add']],
-            //['repassword','compare','compareAttribute'=>'password']
+            [['password','repassword'],'string','min'=>4,'tooShort'=>'密码太短','on'=>['add']],
             ['repassword','compare','compareAttribute'=>'password','message'=>'两次新密码不一致','on'=>['add']],
             [['end_time','end_ip'], 'string', 'max' => 255,'on'=>['add']],
             ['email','unique','message'=>'邮箱存在','on'=>['add']],

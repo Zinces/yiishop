@@ -131,6 +131,7 @@ class GoodsController extends \yii\web\Controller
                     $model->path = $action->getWebUrl();
                     $model->save();
                     $action->output['fileUrl'] = $model->path;
+                    $action->output['goods_id']=$model->id;
 
 
 

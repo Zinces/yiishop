@@ -139,11 +139,5 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
-
-
-
-
-
-
-
+    
 }

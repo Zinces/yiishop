@@ -4,6 +4,7 @@ namespace backend\models;
 
 use Codeception\Module\Redis;
 use Yii;
+use yii\helpers\ArrayHelper;
 use yii\web\IdentityInterface;
 
 /**
@@ -42,7 +43,38 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public $code;
     public $repassword;
+    public $roles=[];
     static public $statusOptisn=[0=>'失效',1=>'正常'];
+    public static function getRole(){
+        $authmanager=Yii::$app->authManager->getRoles();
+        return ArrayHelper::map($authmanager,'name','description');
+    }
+    public function addRoles($id){
+        $authmanager=Yii::$app->authManager;
+        foreach ($this->roles as $roleName){
+            $role=$authmanager->getRole($roleName);
+            if($role){
+                $authmanager->assign($role,$id);
+            }
+        }
+        return true;
+    }
+    public function loadData($id){
+        foreach (Yii::$app->authManager->getRolesByUser($id) as $role){
+            $this->roles[]=$role->name;
+        }
+    }
+    public function updateRole($id){
+         $authmanager=Yii::$app->authManager;
+         $authmanager->revokeAll($id);
+         foreach ($this->roles as $roleName){
+             $role=$authmanager->getRole($roleName);
+             if($role){
+                 $authmanager->assign($role,$id);
+             }
+         }
+        return true;
+    }
     public function rules()
     {
         return [
@@ -54,7 +86,8 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             ['repassword','compare','compareAttribute'=>'password','message'=>'两次新密码不一致','on'=>['add']],
             [['end_time','end_ip'], 'string', 'max' => 255,'on'=>['add']],
             ['email','unique','message'=>'邮箱存在','on'=>['add']],
-            ['email','match','pattern'=>'/\w+([-.]\w+)*@(qq|163|126)\.com/','message'=>'邮箱格式不对','on'=>['add']]
+            ['email','match','pattern'=>'/\w+([-.]\w+)*@(qq|163|126)\.com/','message'=>'邮箱格式不对','on'=>['add']],
+            ['roles','safe'],
         ];
     }
 
@@ -72,6 +105,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
             'code'=>false,
             'repassword'=>'再输一次密码',
             'email'=>'邮箱',
+            'roles'=>'角色',
         ];
     }
 
@@ -121,7 +155,7 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     ////1
     public function validateAuthKey($authKey)
     {
-        return $this->getAuthKey() === $authKey;
+        return $this->getAuthKey() == $authKey;
     }
     /**
      * @inheritdoc
@@ -139,5 +173,5 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
     {
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
-    
+
 }

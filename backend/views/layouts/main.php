@@ -40,6 +40,7 @@ AppAsset::register($this);
         ['label' => '商品分类', 'url' => ['/good_category/index']],
         ['label' => '管理员', 'url' => ['/admin/index']],
         ['label' => '文章', 'url' => ['/article/index']],
+
     ];
     if (Yii::$app->user->isGuest) {
         $menuItems[] = ['label' => '登录', 'url' => ['/admin/login']];
@@ -53,6 +54,8 @@ AppAsset::register($this);
             . Html::endForm()
             . '</li>';
         $menuItems[] = ['label' => '修改密码', 'url' => ['/admin/mpassword']];
+        $menuItems[] = ['label' => '权限', 'url' => ['/rbac/indexpermission']];
+        $menuItems[] = ['label' => '角色', 'url' => ['/rbac/indexrole']];
     }
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],

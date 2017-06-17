@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Brand;
 use yii\web\Request;
 use yii\web\UploadedFile;
@@ -137,6 +138,15 @@ class BrandController extends \yii\web\Controller
             ]
         ];
        
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
+            ],
+        ];
     }
 
 }

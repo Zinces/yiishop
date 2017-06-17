@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Goodcategory;
 use yii\data\Pagination;
 use yii\helpers\ArrayHelper;
@@ -67,6 +68,15 @@ class Good_categoryController extends \yii\web\Controller
         $options = ArrayHelper::merge([['id'=>0,'name'=>'顶级分类','parent_id'=>0]],Goodcategory::find()->asArray()->all());
 
         return $this->render('add',['model'=>$model,'options'=>$options]);
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit']
+            ],
+        ];
     }
     
 }

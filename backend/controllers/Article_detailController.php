@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Article;
 use backend\models\Article_detail;
 use yii\web\Request;
@@ -55,5 +56,14 @@ class Article_detailController extends \yii\web\Controller
         $model=Article_detail::findOne(['id'=>$id]);
         $model->delete();
         return $this->redirect(['article_detail/index']);
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
+            ],
+        ];
     }
 }

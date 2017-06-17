@@ -35,6 +35,7 @@ class LoginForm extends Model{
                     $admin->save(false);
                     $cookie=\Yii::$app->user->authTimeout;
                     \Yii::$app->user->login($admin,$this->cookie?$cookie:0);
+                    
                     //var_dump($this->cookie);exit;
                 }
         }else{

@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Article_category;
 use yii\web\Request;
 
@@ -41,6 +42,15 @@ class Article_categoryController extends \yii\web\Controller
         $model->status=-1;
         $model->save();
         return $this->redirect(['article_category/index']);
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
+            ],
+        ];
     }
 
 }

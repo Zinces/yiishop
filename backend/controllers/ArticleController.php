@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Article;
 use backend\models\Article_category;
 use backend\models\Article_detail;
@@ -89,6 +90,15 @@ class ArticleController extends \yii\web\Controller
             'upload' => [
                 'class' => 'kucha\ueditor\UEditorAction',
             ]
+        ];
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
+            ],
         ];
     }
 

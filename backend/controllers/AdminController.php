@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use backend\filters\AccessFilters;
 use backend\models\Admin;
 use backend\models\LoginForm;
 use backend\models\MpasswordForm;
@@ -11,15 +12,6 @@ use yii\web\Request;
 
 class AdminController extends \yii\web\Controller
 {
-    public function actionInit(){
-        $admin=new Admin();
-        $admin->user='小媳';
-        $admin->password='11111';
-        $admin->password=\Yii::$app->security->generatePasswordHash($admin->password);
-        $admin->email='305977606@qq.com';
-        $admin->save();
-        return $this->redirect(['admin/login']);
-    }
     public function actionIndex()
     {
         $models=Admin::find()->all();
@@ -35,6 +27,8 @@ class AdminController extends \yii\web\Controller
                 $model->password=\Yii::$app->security->generatePasswordHash($model->password);
                 $model->status=1;
                 $model->save(false);
+                $id=$model->id;
+                $model->addRoles($id);
                 return $this->redirect(['admin/index']); 
             }
         }
@@ -42,17 +36,17 @@ class AdminController extends \yii\web\Controller
     }
     public function actionEdit($id){
         $model =Admin::findOne(['id'=>$id]);
-        //$model->scenario=Admin::SCENARIO_EDIT;
         $request=new Request();
+        $model->loadData($id);
         if($request->isPost){
-            //var_dump($request->post());exit;
+
             $model->load($request->post());
-            //var_dump($model);exit;
+
             if($model->validate()){
-                //var_dump($model);exit;
-                $model->save(false);
-                //var_dump($model->getErrors());exit;
-                return $this->redirect(['admin/index']);
+                    $model->updateRole($id);
+                    $model->save(false);
+                    \Yii::$app->session->setFlash('success','修改用户成功');
+                    return $this->redirect(['admin/index']);
             }else{
                 var_dump($model->getErrors());exit;
             }
@@ -83,6 +77,7 @@ class AdminController extends \yii\web\Controller
         if($request->isPost){
             $model->load($request->post());
             if($model->validate()){
+                $model->validatePassword();
                 return $this->redirect(['goods/index']);
             }
         }
@@ -108,31 +103,15 @@ class AdminController extends \yii\web\Controller
         }
         return $this->render('mpassword',['model'=>$model]);
     }
-/*    public function behaviors()
+   public function behaviors()
     {
         return[
-            'acf'=>[
-                'class'=>AccessControl::className(),
-                'only'=>['login','add','index'],//该过滤器作用的操作，默认所有
-                'rules'=>[
-                    [
-                        'allow'=>true,//是否允许执行
-                        'actions'=>['login'],//指定操作
-                        'roles'=>['?'],//角色？未认证用户，@已认证用户
-                    ],
-                    [
-                        'allow'=>true,//是否允许执行
-                        'actions'=>['add','index'],//指定操作
-                        'roles'=>['@'],//角色？未认证用户，@已认证用户
-//                        'matchCallback'=>function(){
-//                            //return \date('j')==5;//几号可以访问
-//                        }
-                    ],
-                    //其他都禁止执行
-                ],
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
             ],
         ];
-    }*/
+    }
 
 
 }

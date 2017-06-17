@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 
+use backend\filters\AccessFilters;
 use backend\models\Goodcategory;
 use backend\models\Goods_day_count;
 use backend\models\Goods_intro;
@@ -225,5 +226,14 @@ class GoodsController extends \yii\web\Controller
             return 'false';
         }
 
+    }
+    public function behaviors()
+    {
+        return[
+            'accessFilters'=>[
+                'class'=>AccessFilters::className(),
+                'only'=>['add','index','edit','del']
+            ],
+        ];
     }
 }

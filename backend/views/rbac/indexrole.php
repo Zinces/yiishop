@@ -15,7 +15,7 @@
                     echo ' | ';
                 }
                 ?></td>
-            <td><?=\yii\bootstrap\Html::a('修改',['rbac/editrole','name'=>$model->name],['class'=>'btn btn-warning btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['rbac/delrole','name'=>$model->name],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?php if(Yii::$app->user->can('rbac/editrole')){echo \yii\bootstrap\Html::a('修改',['rbac/editrole','name'=>$model->name],['class'=>'btn btn-warning btn-xs']);}?> <?php if(Yii::$app->user->can('rbac/delrole')){echo \yii\bootstrap\Html::a('删除',['rbac/delrole','name'=>$model->name],['class'=>'btn btn-danger btn-xs']);}?></td>
         </tr>
     <?php endforeach;?>
 </table>

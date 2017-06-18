@@ -68,11 +68,11 @@ class Admin extends \yii\db\ActiveRecord implements IdentityInterface
          $authmanager=Yii::$app->authManager;
          $authmanager->revokeAll($id);
          foreach ($this->roles as $roleName){
-             $role=$authmanager->getRole($roleName);
-             if($role){
-                 $authmanager->assign($role,$id);
-             }
-         }
+            $role=$authmanager->getRole($roleName);
+            if($role){
+                $authmanager->assign($role,$id);
+            }
+        }
         return true;
     }
     public function rules()

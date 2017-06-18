@@ -11,7 +11,9 @@
         <td><?=str_repeat('—',$model->depth).$model->name?>
         <td><?=$model->parent_id?$model->parent->name:''?>
         <span class="toggle_cate glyphicon glyphicon-chevron-down" style="float: right"></span></td>
-        <td><?=\yii\bootstrap\Html::a('修改',['good_category/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?></td>
+        <td><?php if(Yii::$app->user->can('good_category/edit')){
+                echo \yii\bootstrap\Html::a('修改',['good_category/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs']);
+            }?></td>
     </tr>
     <?php endforeach;?>
 </table>

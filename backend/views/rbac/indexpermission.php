@@ -8,7 +8,7 @@
         <tr>
             <td><?=$model->name?></td>
             <td><?=$model->description?></td>
-            <td><?=\yii\bootstrap\Html::a('修改',['rbac/editpermission','name'=>$model->name],['class'=>'btn btn-warning bnt-xs'])?> <?=\yii\bootstrap\Html::a('删除',['rbac/delpermission','name'=>$model->name],['class'=>'btn btn-danger bnt-xs'])?></td>
+            <td><?php if(Yii::$app->user->can('rbac/editpermission')){echo \yii\bootstrap\Html::a('修改',['rbac/editpermission','name'=>$model->name],['class'=>'btn btn-warning btn-xs']);}?> <?php if(Yii::$app->user->can('rbac/delpermission')){echo \yii\bootstrap\Html::a('删除',['rbac/delpermission','name'=>$model->name],['class'=>'btn btn-danger btn-xs']);}?></td>
         </tr>
     <?php endforeach;?>
 </table>

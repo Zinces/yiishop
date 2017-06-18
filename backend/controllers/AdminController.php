@@ -15,6 +15,7 @@ class AdminController extends \yii\web\Controller
     public function actionIndex()
     {
         $models=Admin::find()->all();
+
         return $this->render('index',['models'=>$models]);
     }
     public function actionAdd(){
@@ -39,9 +40,7 @@ class AdminController extends \yii\web\Controller
         $request=new Request();
         $model->loadData($id);
         if($request->isPost){
-
             $model->load($request->post());
-
             if($model->validate()){
                     $model->updateRole($id);
                     $model->save(false);
@@ -108,10 +107,11 @@ class AdminController extends \yii\web\Controller
         return[
             'accessFilters'=>[
                 'class'=>AccessFilters::className(),
-                'only'=>['add','index','edit','del']
+                'only'=>['index','edit','del']
             ],
         ];
     }
+
 
 
 }

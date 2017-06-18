@@ -27,41 +27,7 @@ AppAsset::register($this);
 
 <div class="wrap">
     <?php
-    NavBar::begin([
-        'brandLabel' => '面向代码，春去冬来',
-        'brandUrl' => Yii::$app->homeUrl,
-        'options' => [
-            'class' => 'navbar-inverse navbar-fixed-top',
-        ],
-    ]);
-    $menuItems = [
-        ['label' => '商品', 'url' => ['/goods/index']],
-        ['label' => '品牌', 'url' => ['/brand/index']],
-        ['label' => '商品分类', 'url' => ['/good_category/index']],
-        ['label' => '管理员', 'url' => ['/admin/index']],
-        ['label' => '文章', 'url' => ['/article/index']],
-
-    ];
-    if (Yii::$app->user->isGuest) {
-        $menuItems[] = ['label' => '登录', 'url' => ['/admin/login']];
-    } else {
-        $menuItems[] = '<li>'
-            . Html::beginForm(['/admin/logout'], 'post')
-            . Html::submitButton(
-                '退出 (' . Yii::$app->user->identity->user . ')',
-                ['class' => 'btn btn-link logout']
-            )
-            . Html::endForm()
-            . '</li>';
-        $menuItems[] = ['label' => '修改密码', 'url' => ['/admin/mpassword']];
-        $menuItems[] = ['label' => '权限', 'url' => ['/rbac/indexpermission']];
-        $menuItems[] = ['label' => '角色', 'url' => ['/rbac/indexrole']];
-    }
-    echo Nav::widget([
-        'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => $menuItems,
-    ]);
-    NavBar::end();
+    echo \backend\widgets\MenuWidget::widget();
     ?>
 
     <div class="container">

@@ -44,7 +44,11 @@ echo \yii\bootstrap\Html::submitInput('搜索',['class'=>'btn btn-info','style'=
             <td><?=\backend\models\Goods::$statusOptions[$model->status]?></td>
 
             <td><?=date('Y-m-d H:i:s',$model->create_time)?></td>
-            <td><?=\yii\bootstrap\Html::a('相册',['goods/gallery','id'=>$model->id],['class'=>'bnt btn-warning btn-xs'])?><?=\yii\bootstrap\Html::a('查看',['goods/sel','id'=>$model->id],['class'=>'bnt btn-primary btn-xs'])?><?=\yii\bootstrap\Html::a('修改',['goods/edit','id'=>$model->id],['class'=>'bnt btn-warning btn-xs'])?><?=\yii\bootstrap\Html::a('删除',['goods/del','id'=>$model->id],['class'=>'bnt btn-danger btn-xs'])?></td>
+            <td><?=\yii\bootstrap\Html::a('相册',['goods/gallery','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?>
+                <?=\yii\bootstrap\Html::a('查看',['goods/sel','id'=>$model->id],['class'=>'btn btn-primary btn-xs'])?><br/><?php if(Yii::$app->user->can('goods/edit')){echo \yii\bootstrap\Html::a('修改',['goods/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs']);
+                }?>
+                <?php if(Yii::$app->user->can('goods/del')){echo \yii\bootstrap\Html::a('删除',['goods/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']);
+                }?></td>
         </tr>
     <?php endforeach;?>
 </table>

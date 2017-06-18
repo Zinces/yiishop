@@ -21,7 +21,11 @@
         <td><?=date('Y-m-d H:i:s',$model->end_time)?></td>
         <td><?=$model->end_ip?></td>
         <td><?=\backend\models\Admin::$statusOptisn[$model->status]?></td>
-        <td><?=\yii\bootstrap\Html::a('修改',['admin/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['admin/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+        <td><?php if(Yii::$app->user->can('admin/edit')){
+                echo \yii\bootstrap\Html::a('修改',['admin/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs']);
+            }?> <?php if(Yii::$app->user->can('admin/del')){
+                echo \yii\bootstrap\Html::a('删除',['admin/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']);
+            }?></td>
     </tr>
     <?php endforeach;?>
 </table>

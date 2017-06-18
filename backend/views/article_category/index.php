@@ -14,7 +14,11 @@
             <td><?=$model->sort?></td>
             <td><?=\backend\models\Article_category::$statusOptions[$model->status]?></td>
             <td><?=\backend\models\Article_category::$is_helpOptions[$model->is_help]?></td>
-            <td><?=\yii\bootstrap\Html::a('修改',['article_category/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs'])?> <?=\yii\bootstrap\Html::a('删除',['article_category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs'])?></td>
+            <td><?php if(Yii::$app->user->can('article_category/edit')){
+                    echo \yii\bootstrap\Html::a('修改',['article_category/edit','id'=>$model->id],['class'=>'btn btn-warning btn-xs']);
+                }?> <?php if(Yii::$app->user->can('article_category/del')){
+                    echo \yii\bootstrap\Html::a('删除',['article_category/del','id'=>$model->id],['class'=>'btn btn-danger btn-xs']);
+                }?></td>
         </tr>
     <?php endforeach;?>
 </table>

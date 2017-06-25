@@ -84,7 +84,6 @@ class AdminController extends \yii\web\Controller
     }
     public function actionLogout(){
         $id=\Yii::$app->user->id;
-
         $model=Admin::findOne(['id'=>$id]);
         $model->end_time=time();
         $model->end_ip=$_SERVER['REMOTE_ADDR'];

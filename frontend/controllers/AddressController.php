@@ -8,7 +8,11 @@ use frontend\models\Cart;
 use frontend\models\Goods;
 use frontend\models\Goodsgallery;
 use frontend\models\Locations;
+use frontend\models\Order;
+use frontend\models\OrderGoods;
+use yii\db\Exception;
 use yii\web\Cookie;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 
 class AddressController extends \yii\web\Controller
@@ -16,8 +20,12 @@ class AddressController extends \yii\web\Controller
 
     public $layout ='address';
     public function actionAddress(){
+        if(\Yii::$app->user->isGuest){
+            return $this->redirect(['member/login']);
+        }
         $model=new Address();
-        $models=Address::find()->all();
+        $user_id=\Yii::$app->user->id;
+        $models=Address::find()->where(['user_id'=>$user_id])->all();
         if($model->load(\Yii::$app->request->post()) && $model->validate()){
             if($model->status == 1){
                 Address::updateAll(['status'=>0]);
@@ -25,6 +33,7 @@ class AddressController extends \yii\web\Controller
             $model->province_id=$model->province;
             $model->city_id=$model->city;
             $model->district_id=$model->district;
+            $model->user_id=$user_id;
             $model->save();
             \Yii::$app->session->setFlash('success','添加地址成功');
             return $this->redirect(['address/address']);
@@ -33,7 +42,8 @@ class AddressController extends \yii\web\Controller
     }
     public function actionEdit($id){
         $model=Address::findOne(['id'=>$id]);
-        $models=Address::find()->all();
+        $user_id=\Yii::$app->user->id;
+        $models=Address::find()->where(['user_id'=>$user_id])->all();
         if($model->load(\Yii::$app->request->post()) && $model->validate()){
             if($model->status == 1){
                  Address::updateAll(['status'=>0]);
@@ -45,7 +55,7 @@ class AddressController extends \yii\web\Controller
             //\Yii::$app->session->setFlash('success','添加地址成功');
             return $this->redirect(['address/address']);
         }
-        return $this->render('address',['model'=>$model,'models'=>$models]);
+        return $this->render('index',['model'=>$model,'models'=>$models]);
     }
     public function actionDel($id){
         $model=Address::findOne(['id'=>$id]);
@@ -112,17 +122,18 @@ class AddressController extends \yii\web\Controller
             $cookies->add($cookie);
         }else{
             //登陆后
-            $cart=Cart::findOne(['goods_id'=>$goods_id]);
             $user_id=\Yii::$app->user->id;
+            $cart=Cart::findOne(['goods_id'=>$goods_id,'member_id'=>$user_id]);
             if($cart['goods_id']){
-                 $cart['amount']+=$amount;
-            }else{
-                $cart=new Cart();
-                $cart->goods_id=$goods_id;
-                $cart->amount=$amount;
-                $cart->member_id=$user_id;
-            }
+                    $cart['amount']+=$amount;
+                }else{
+                    $cart=new Cart();
+                    $cart->goods_id=$goods_id;
+                    $cart->amount=$amount;
+                    $cart->member_id=$user_id;
+                }
                 $cart->save();
+
         }
         return $this->redirect(['address/cart']);
     }
@@ -183,8 +194,8 @@ class AddressController extends \yii\web\Controller
             $cookie=new Cookie(['name'=>'cart','value'=>serialize($cart)]);
             $cookies->add($cookie);
         }else{
-           // $user_id=\Yii::$app->user->id;
-            $cart=Cart::findOne(['goods_id'=>$goods_id]);
+           $user_id=\Yii::$app->user->id;
+           $cart=Cart::findOne(['goods_id'=>$goods_id,'member_id'=>$user_id]);
             if($amount){
                 $cart['amount']=$amount;
                 $cart->save();
@@ -192,5 +203,106 @@ class AddressController extends \yii\web\Controller
                  $cart->delete();
                  }
           }
+    }
+    public function actionOrder(){
+        if(\Yii::$app->user->isGuest){
+            return $this->redirect(['member/login']);
+        }
+        $this->layout='cart';
+        $user_id=\Yii::$app->user->id;
+        $address=Address::find()->where(['user_id'=>$user_id])->all();
+        $carts=Cart::find()->where(['member_id'=>$user_id])->all();
+        $request=\Yii::$app->request;
+        if($request->isPost){
+            $address_id=$request->post('address_id');
+            $delivery_id=$request->post('delivery');
+            $payment_id=$request->post('payment');
+            $total=$request->post('total');
+            //var_dump($total);exit;
+
+            $address=Address::findOne(['id'=>$address_id]);
+            //var_dump($address);
+            $delivery=Order::$sendway[$delivery_id];
+            $payment=Order::$payway[$payment_id];
+            $status=Order::$statusOptions;
+            //var_dump($status);exit;
+
+            $model=new Order();
+            $model->member_id=$user_id;
+            $model->name=$address->name;
+            $model->province=$address->location->name;
+            $model->city=$address->location1->name;
+            $model->area=$address->location2->name;
+            $model->address=$address->address;
+            $model->tel=$address->tel;
+            $model->delivery_id=$delivery_id;
+            $model->delivery_name=$delivery['delivery_name'];
+            $model->delivery_price=$delivery['delivery_price'];
+            //var_dump($model->delivery_price);exit;
+            $model->payment_id=$payment_id;
+            $model->payment_name=$payment['payment_name'];
+            $model->total=$total;
+            $model->status=1;
+            //var_dump($model->total);exit;
+            $model->create_time=time();
+
+            $transaction=\Yii::$app->db->beginTransaction();
+            try{
+                $model->save(false);
+                foreach ($carts as $cart){
+                    $goods=\backend\models\Goods::findOne(['id'=>$cart->goods_id]);
+                    if($goods==null){
+                        throw new HttpException($goods->name.'商品已售空');
+                    }
+                    if($goods->stock<$cart->amount){
+                        throw new HttpException($goods->name.'商品库存不足');
+                    }
+                    $mode=new OrderGoods();
+                    $mode->order_id=$model->id;
+                    $mode->goods_id=$cart->goods_id;
+                    $mode->goods_name=$cart->goods->name;
+                    $mode->logo=$cart->goods->logo;
+                    $mode->price=$cart->goods->shop_price;
+                    $mode->amount=$cart->amount;
+                    $mode->total=$cart->amount*$cart->goods->shop_price;                                 $mode->save();
+                    //减少库存
+                    $goods->stock-=$cart->amount;
+                    $goods->save();
+                    Cart::deleteAll(['member_id'=>$user_id]);
+                 }
+                $transaction->commit();
+            }catch (Exception $e){
+                $transaction->rollBack();
+            }
+
+
+
+
+         return $this->redirect(['address/success']);
+
+        }
+     return $this->render('order',['address'=>$address,'carts'=>$carts]);
+    }
+    public function actionSuccess(){
+        $this->layout='cart';
+        if (\Yii::$app->user->isGuest){
+            return $this->redirect(['member/login']);
+        }
+        $user_id=\Yii::$app->user->id;
+        $model=Cart::find()->where(['member_id'=>$user_id])->all();
+        //var_dump($model);exit;
+        return $this->render('success');
+  }
+    public function actionOrindex(){
+        $this->layout='cart';
+        if (\Yii::$app->user->isGuest){
+            return $this->redirect(['member/login']);
+        }
+        $user_id=\Yii::$app->user->id;
+        $models=Order::find()->where(['member_id'=>$user_id])->all();
+
+        //var_dump($models);exit;
+        //$models=OrderGoods::find()->where(['order_id'=>$order_id])->all();
+        return $this->render('orindex',['models'=>$models]);
     }
 }

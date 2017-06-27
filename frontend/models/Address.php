@@ -68,9 +68,7 @@ class Address extends \yii\db\ActiveRecord
     public function getLocation2(){
         return $this->hasOne(Locations::className(),['id'=>'district_id']);
     }
-    /*public function getcart(){
-        return $this->hasOne(Cart::className(),['goods_id'=>'id']);
-    }*/
+
 
 
 }

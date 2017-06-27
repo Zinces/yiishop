@@ -80,13 +80,19 @@
         </tbody>
         <tfoot>
         <tr>
-            <td colspan="6">购物金额总计： <strong>￥ <span id="total"></span></strong></td>
+            <td colspan="6">购物金额总计： <strong>￥<?php $zong=0;foreach ($models as $model) {
+                        $price =$model['shop_price']*$model['amount'];
+                        $zong+=$price;
+                    }
+
+                    echo $zong;
+                    ?> <span id="total"></span></strong></td>
         </tr>
         </tfoot>
     </table>
     <div class="cart_btn w990 bc mt10">
         <a href="" class="continue">继续购物</a>
-        <a href="" class="checkout">结 算</a>
+        <a href="<?=\yii\helpers\Url::to(['address/order'])?>" class="checkout">结 算</a>
     </div>
 </div>
 <!-- 主体部分 end -->

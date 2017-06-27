@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use frontend\models\Cart;
 use frontend\models\LoginForm;
 use frontend\models\Member;
 
@@ -32,6 +33,33 @@ class MemberController extends \yii\web\Controller
         $model=new LoginForm();
         if($model->load(\Yii::$app->request->post()) && $model->validate()){
             \Yii::$app->session->setFlash('success','恭喜登陆成功');
+            $user_id=\Yii::$app->user->id;
+            $cookies=\Yii::$app->request->cookies;
+            $cookie=$cookies->get('cart');
+            //var_dump($cookie);exit;
+            if($cookie!=null) {
+                $cart = unserialize($cookie->value);
+                if ($cart != null) {
+                     foreach ($cart as $goods_id=>$amount) {
+                         //检查购物车里是否有该商品，如果有就累加
+                         $cart=Cart::findOne(['goods_id'=>$goods_id,'member_id'=>$user_id]);
+                         if($cart['goods_id']){
+                             $cart['amount']+=$amount;
+                         }else{
+                             $cart=new Cart();
+                             $cart->goods_id=$goods_id;
+                             $cart->amount=$amount;
+                             $cart->member_id=$user_id;
+                         }
+                         $cart->save();
+                         //var_dump($cart->goods_id);
+                         \Yii::$app->response->cookies->remove('cart');
+
+                        }
+
+
+                }
+            }
             return $this->redirect(['good/index']);
         }
         return $this->render('login',['model'=>$model]);

@@ -24,7 +24,7 @@
         <div class="menu_wrap">
             <dl>
                 <dt>订单中心 <b></b></dt>
-                <dd><b>.</b><a href="">我的订单</a></dd>
+                <dd><b>.</b><a href="<?=\yii\helpers\Url::to(['address/orindex'])?>">我的订单</a></dd>
                 <dd><b>.</b><a href="">我的关注</a></dd>
                 <dd><b>.</b><a href="">浏览历史</a></dd>
                 <dd><b>.</b><a href="">我的团购</a></dd>

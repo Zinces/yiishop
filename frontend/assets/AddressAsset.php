@@ -18,6 +18,11 @@ class AddressAsset extends AssetBundle{
         'style/goods.css',
         'style/jqzoom.css',
         'style/cart.css',
+        'style/fillin.css',
+        'style/footer.css',
+        'style/success.css',
+        'style/order.css',
+
 
     ];
     public $js = [
@@ -27,6 +32,7 @@ class AddressAsset extends AssetBundle{
         'js/goods.js',
         'js/jqzoom-core.js',
         'js/cart1.js',
+        'js/cart2.js',
 
 
 

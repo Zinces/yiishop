@@ -3,6 +3,7 @@
 namespace backend\controllers;
 
 
+use backend\components\SphinxClient;
 use backend\filters\AccessFilters;
 use backend\models\Goodcategory;
 use backend\models\Goods_day_count;
@@ -17,6 +18,7 @@ use yii\helpers\ArrayHelper;
 use yii\web\NotAcceptableHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Request;
+use yii\web\Response;
 
 class GoodsController extends \yii\web\Controller
 {
@@ -24,8 +26,25 @@ class GoodsController extends \yii\web\Controller
     {
         $model=new GoodssearchForm();
         $query=Goods::find();
+        if ($keyword=\Yii::$app->request->get('keyword')){
 
-        $model->search($query);
+            $cl = new SphinxClient();
+            $cl->SetServer ( '127.0.0.1', 9312);
+            $cl->SetConnectTimeout ( 10 );
+            $cl->SetArrayResult ( true );
+            $cl->SetMatchMode ( SPH_MATCH_ALL);
+            $cl->SetLimits(0, 1000);
+            $res = $cl->Query($keyword, 'goods');//shopstore_search
+            //var_dump($res);exit;
+            if(!isset($res['matches'])){
+                $query->where(['id'=>0]);
+            }else{
+                //var_dump($res);exit;
+                $ids=ArrayHelper::map($res['matches'],'id','id');
+                $query->where(['in','id',$ids]);
+            }
+        }
+        //$model->search($query);
         /*$key=isset($_GET['key'])?$_GET['key']:'';
         $query=Goods::find()->andWhere(['like','name',$key]);*/
         $count=$query->count();
@@ -34,7 +53,21 @@ class GoodsController extends \yii\web\Controller
             'defaultPageSize'=>2,
         ]);
         $models=$query->offset($page->offset)->limit($page->limit)->all();
-        return $this->render('index',['models'=>$models,'page'=>$page,'model'=>$model]);
+        //关键字高亮
+        if($keyword !=null) {
+            $keywords = array_keys($res['words']);
+            $options = array(
+                'before_match' => '<span style="color:#ff7534;">',
+                'after_match' => '</span>',
+                'chunk_separator' => '...',
+                'limit' => 80, //如果内容超过80个字符，就使用...隐藏多余的的内容
+            );
+            foreach ($models as $index => $item) {
+                $name = $cl->BuildExcerpts([$item->name], 'goods', implode(',', $keywords), $options); //使用的索引不能写*，关键字可以使用空格、逗号等符号做分隔，放心，sphinx很智能，会给你拆分的
+                $models[$index]->name = $name[0];
+            }
+        }
+         return $this->render('index',['models'=>$models,'page'=>$page,'model'=>$model]);
 
     }
     public function actionGoodcategory()
@@ -236,4 +269,13 @@ class GoodsController extends \yii\web\Controller
             ],
         ];
     }
+    public function actionTest(){
+        \Yii::$app->response->format=Response::FORMAT_JSON;
+     if ($brand_id=\Yii::$app->request->get('brand_id')){
+           $goods=Goods::find()->where(['brand_id'=>$brand_id])->asArray()->all();
+           return ['status'=>1,'errormsg'=>'','data'=>$goods];
+       }else{
+           return ['status'=>0,'errormsg'=>'请求方式不对'];
+       }
+   }
 }

@@ -2,6 +2,7 @@
 
 namespace frontend\controllers;
 
+use backend\components\SphinxClient;
 use frontend\models\Address;
 use frontend\models\Brand;
 use frontend\models\Cart;
@@ -11,6 +12,7 @@ use frontend\models\Locations;
 use frontend\models\Order;
 use frontend\models\OrderGoods;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 use yii\web\Cookie;
 use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
@@ -304,5 +306,43 @@ class AddressController extends \yii\web\Controller
         //var_dump($models);exit;
         //$models=OrderGoods::find()->where(['order_id'=>$order_id])->all();
         return $this->render('orindex',['models'=>$models]);
+    }
+    public function actionSousuo(){
+        $query=\backend\models\Goods::find();
+        $models=Brand::find()->all();
+        if ($keyword=\Yii::$app->request->get('keyword')){
+
+            $cl = new SphinxClient();
+            $cl->SetServer ( '127.0.0.1', 9312);
+            $cl->SetConnectTimeout ( 10 );
+            $cl->SetArrayResult ( true );
+            $cl->SetMatchMode ( SPH_MATCH_ALL);
+            $cl->SetLimits(0, 1000);
+            $res = $cl->Query($keyword, 'goods');//shopstore_search
+            //var_dump($res);exit;
+            if(!isset($res['matches'])){
+                $query->where(['id'=>0]);
+            }else{
+                //var_dump($res);exit;
+                $ids=ArrayHelper::map($res['matches'],'id','id');
+                $query->where(['in','id',$ids]);
+            }
+
+        }
+        $goods=$query->all();
+        if($keyword !=null) {
+            $keywords = array_keys($res['words']);
+            $options = array(
+                'before_match' => '<span style="color:#ff7534;">',
+                'after_match' => '</span>',
+                'chunk_separator' => '...',
+                'limit' => 80, //如果内容超过80个字符，就使用...隐藏多余的的内容
+            );
+            foreach ($goods as $index => $item) {
+                $name = $cl->BuildExcerpts([$item->name], 'goods', implode(',', $keywords), $options); //使用的索引不能写*，关键字可以使用空格、逗号等符号做分隔，放心，sphinx很智能，会给你拆分的
+                $goods[$index]->name = $name[0];
+            }
+        }
+        return $this->render('list',['models'=>$models,'goods'=>$goods]);
     }
 }

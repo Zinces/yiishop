@@ -6,7 +6,7 @@ echo \yii\bootstrap\Html::textInput('sn');
 echo \yii\bootstrap\Html::submitInput('搜索',['class'=>'btn btn-info btn-xs']);
 echo \yii\bootstrap\Html::endForm();*/
 $form=\yii\bootstrap\ActiveForm::begin(['method'=>'get','action'=>\yii\helpers\Url::to(['goods/index']),'options'=>['class'=>'form-inline']]);
-echo $form->field($model,'name')->textInput(['placeholder'=>'商品名称'])->label(false);
+echo $form->field($model,'name')->textInput(['placeholder'=>'商品名称','name'=>'keyword'])->label(false);
 echo $form->field($model,'sn')->textInput(['placeholder'=>'货号'])->label(false);
 echo $form->field($model,'minprice')->textInput(['placeholder'=>'￥'])->label(false);
 echo $form->field($model,'maxprice')->textInput(['placeholder'=>'￥'])->label('—');

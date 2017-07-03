@@ -126,7 +126,7 @@ class AddressController extends \yii\web\Controller
             //登陆后
             $user_id=\Yii::$app->user->id;
             $cart=Cart::findOne(['goods_id'=>$goods_id,'member_id'=>$user_id]);
-            if($cart['goods_id']){
+            if($cart){
                     $cart['amount']+=$amount;
                 }else{
                     $cart=new Cart();
@@ -155,8 +155,7 @@ class AddressController extends \yii\web\Controller
                 $goods['amount']=$amount;
                 $models[]=$goods;
             }
-
-        }else{
+            }else{
             //数据库中
             $user_id=\Yii::$app->user->id;
             $carts=Cart::find()->where(['member_id'=>$user_id])->asArray()->all();

@@ -101,7 +101,7 @@ class AdminController extends \yii\web\Controller
         }
         return $this->render('mpassword',['model'=>$model]);
     }
-   public function behaviors()
+    public function behaviors()
     {
         return[
             'accessFilters'=>[

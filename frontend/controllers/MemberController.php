@@ -18,14 +18,14 @@ class MemberController extends \yii\web\Controller
     public $layout='member';
     public function actionRegister(){
         $model=new Member();
-        if($model->load(\Yii::$app->request->post()) && $model->validate()){
-            $model->password_hash=\Yii::$app->security->generatePasswordHash($model->password);
-            $model->created_at=time();
-            $model->status=1;
-            $model->save(false);
-            \Yii::$app->session->setFlash('success','恭喜注册成功');
-            return $this->redirect(['member/login']);
-        }
+//        if($model->load(\Yii::$app->request->post()) && $model->validate()){
+//            $model->password_hash=\Yii::$app->security->generatePasswordHash($model->password);
+//            $model->created_at=time();
+//            $model->status=1;
+//            $model->save(false);
+//            \Yii::$app->session->setFlash('success','恭喜注册成功');
+//            return $this->redirect(['member/login']);
+//        }
         //var_dump($model->getErrors());exit;
         return $this->render('register',['model'=>$model]);
     }

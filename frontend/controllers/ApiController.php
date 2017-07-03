@@ -526,7 +526,7 @@ class ApiController extends Controller{
             }
         }
     }
-    public function actions()
+   /* public function actions()
     {
         return[
             'captcha' => [
@@ -536,7 +536,7 @@ class ApiController extends Controller{
                 'maxLength'=>'3',
             ],
         ];
-    }
+    }*/
     public function actionUpload(){
         $img=UploadedFile::getInstanceByName('img');
         if ($img){

@@ -51,7 +51,7 @@ class Member extends \yii\db\ActiveRecord implements IdentityInterface
             ['email', 'email','message'=>'邮箱必须合法'],
             [['password','newpassword'],'string','length'=>[4,32],'tooShort'=>'密码过短'],
             [['tel'],'match','pattern'=>'/^[1][358][0-9]{9}$/','message'=>'手机号码必须合法'],
-           ['code','captcha','captchaAction'=>'api/captcha'],
+           ['code','captcha','captchaAction'=>'site/captcha'],
             ['sms','validateSms']
         ];
     }

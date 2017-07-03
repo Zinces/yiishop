@@ -124,17 +124,17 @@ class WechatController extends Controller{
                     [
                         "type" => "view",
                         "name" => "个人中心",
-                        "url"  => Url::to(['wechat/user'],true)
+                        "url"  => Url::to(['wechat/user'])
                     ],
                     [
                         "type" => "view",
                         "name" => "我的订单",
-                        "url"  => Url::to(['wechat/order'],true)
+                        "url"  => Url::to(['wechat/order'])
                     ],
                     [
                         "type" => "view",
                         "name" => "绑定账户",
-                        "url" => Url::to(['wechat/login'],true)
+                        "url" => Url::to(['wechat/login'])
                     ],
                 ],
             ],

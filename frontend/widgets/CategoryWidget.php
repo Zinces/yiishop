@@ -1,6 +1,6 @@
 <?php
 namespace frontend\widgets;
-use frontend\models\GoodCategory;
+use frontend\models\Goodcategory;
 use yii\base\Widget;
 
 class CategoryWidget extends Widget{

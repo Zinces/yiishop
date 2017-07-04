@@ -11,191 +11,159 @@ class WechatController extends Controller{
     //微信开发依赖的插件  easyWechat
     //关闭csrf验证
     public $enableCsrfValidation = false;
-
-    //url 就是用于接受微信服务器发送的请求
-    public function actionIndex()
-    {
-        //echo 'wechat-index';
-        //echo  $_GET['echostr'];
-        $app = new Application(\Yii::$app->params['wechat']);
-
-        $app->server->setMessageHandler(function ($message) {
+    public function actionIndex(){
+    $app = new Application(\Yii::$app->params['wechat']);
+        // 从项目实例中得到服务端应用实例。
+        $server = $app->server;
+        $server->setMessageHandler(function ($message) {
             // $message->FromUserName // 用户的 openid
             // $message->MsgType // 消息类型：event, text....
             //return "您好！欢迎关注我!";
-            switch ($message->MsgType){
-                case 'text':
-                    //文本消息
-                    switch ($message->Content){
-                        case '成都':
-                            $xml = simplexml_load_file('http://flash.weather.com.cn/wmaps/xml/sichuan.xml');
-                            foreach($xml as $city){
-                                if($city['cityname'] == '成都'){
-                                    $weather = $city['stateDetailed'];
-                                    break;
-                                }
-                            }
-                            return '成都的天气情况是：'.$weather;
-                            break;
-                        case '注册':
-                            $url = Url::to(['user/register'],true);
-                            return '点此注册'.$url;
-                            break;
-                        case '活动':
-                         //多图文信息
+             switch ($message->MsgType){
+                case 'event'://点击事件
+                    if($message->Event=='CLICK'){
+                        if ($message->EventKey=='cxsp'){
                             $news1 = new News([
-                                'title'       => '十一大减价',
-                                'description' => '图文信息的描述...',
-                                'url'         => 'http://www.baidu.com',
-                                'image'       => 'http://pic27.nipic.com/20130131/1773545_150401640000_2.jpg',
+                                'title'       => '智能液晶平板电视机',
+                                'description' => '智能液晶平板电视机5折',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=27',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/ad/22/ad22c06c3b759867cc53c534920b9bcf1498ec95.jpg',
                             ]);
                             $news2 = new News([
-                                'title'       => '流量5折',
-                                'description' => '流量5折...',
-                                'url'         => 'http://www.qq.com',
-                                'image'       => 'http://pic74.nipic.com/file/20150810/10115763_233338370780_2.jpg',
+                                'title'       => '小米电视机',
+                                'description' => '小米电视机6折.',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=18',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/7e/7e/7e7ea9b5bfe3acd7102c8087ec14b8a5497b05b6.jpg',
                             ]);
                             $news3 = new News([
-                                'title'       => '无限流量套餐',
-                                'description' => '流量5折...',
-                                'url'         => 'http://www.jd.com',
-                                'image'       => 'http://pic3.16pic.com/00/37/06/16pic_3706700_b.jpg',
+                                'title'       => '洛川苹果',
+                                'description' => '洛川苹果买一送一',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=17',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/b1/01/b1019e6448bff443ca54ca5cfd2e77066b5bf0f7.jpg',
                             ]);
-                            return [$news1,$news2,$news3];
-                            break;
-                    }
-
-
-
-                    return '收到你的消息:'.$message->Content;
-                    break;
-                case 'event'://事件
-                    //事件的类型   $message->Event
-                    //事件的key值  $message->EventKey
-                    if($message->Event == 'CLICK'){//菜单点击事件
-                        if($message->EventKey == 'zxhd'){
-                            $news1 = new News([
-                                'title'       => '十一大减价',
-                                'description' => '图文信息的描述...',
-                                'url'         => 'http://www.baidu.com',
-                                'image'       => 'http://pic27.nipic.com/20130131/1773545_150401640000_2.jpg',
+                            $news4 = new News([
+                                'title'       => '剃须刀',
+                                'description' => '剃须刀7折',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=19',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/aa/75/aa756ce85b3b321493b816ad611d0a2613835035.jpg',
                             ]);
-                            $news2 = new News([
-                                'title'       => '流量5折',
-                                'description' => '流量5折...',
-                                'url'         => 'http://www.qq.com',
-                                'image'       => 'http://pic74.nipic.com/file/20150810/10115763_233338370780_2.jpg',
+                            $news5 = new News([
+                                'title'       => '无锡阳山水蜜桃子',
+                                'description' => '无锡阳山水蜜桃子买一送一',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=21',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/48/f2/48f2a8380611d05710d50486cc70f4c06ae01e47.jpg',
                             ]);
-                            $news3 = new News([
-                                'title'       => '无限流量套餐',
-                                'description' => '流量5折...',
-                                'url'         => 'http://www.jd.com',
-                                'image'       => 'http://pic3.16pic.com/00/37/06/16pic_3706700_b.jpg',
-                            ]);
-                            return [$news1,$news2,$news3];
+                            return [$news1,$news2,$news3,$news4,$news5];
                         }
                     }
-
-                    return '接受到了'.$message->Event.'类型事件'.'key:'.$message->EventKey;
+                    //return '接受到了'.$message->Event.'类型事件'.'key:'.$message->EventKey;
                     break;
-            }
+                case 'text':
+                    switch ($message->Content){
+                        case '帮助':
+                            return '您可以发送 优惠、解除绑定 等信息';
+                        case '优惠':
+                            $news1 = new News([
+                                'title'       => '智能液晶平板电视机',
+                                'description' => '智能液晶平板电视机5折',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=27',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/ad/22/ad22c06c3b759867cc53c534920b9bcf1498ec95.jpg',
+                            ]);
+                            $news2 = new News([
+                                'title'       => '小米电视机',
+                                'description' => '小米电视机6折.',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=18',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/7e/7e/7e7ea9b5bfe3acd7102c8087ec14b8a5497b05b6.jpg',
+                            ]);
+                            $news3 = new News([
+                                'title'       => '洛川苹果',
+                                'description' => '洛川苹果买一送一',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=17',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/b1/01/b1019e6448bff443ca54ca5cfd2e77066b5bf0f7.jpg',
+                            ]);
+                            $news4 = new News([
+                                'title'       => '剃须刀',
+                                'description' => '剃须刀7折',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=19',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/aa/75/aa756ce85b3b321493b816ad611d0a2613835035.jpg',
+                            ]);
+                            $news5 = new News([
+                                'title'       => '无锡阳山水蜜桃子',
+                                'description' => '无锡阳山水蜜桃子买一送一',
+                                'url'         => 'http://zinces.huxiyan.site/address/good?id=21',
+                                'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/48/f2/48f2a8380611d05710d50486cc70f4c06ae01e47.jpg',
+                            ]);
+                            return [$news1,$news2,$news3,$news4,$news5];
+                    }
+                    return $message->Content;
+              }
         });
+
+
         $response = $app->server->serve();
-// 将响应输出
-        $response->send(); // Laravel 里请使用：return $response;
-
-    }
-
-
-    //设置菜单
-    public function actionSetMenu()
-    {
+    // 将响应输出
+    $response->send(); // Laravel 里请使用：return $response;
+ }
+    public function actionSetMenu(){
         $app = new Application(\Yii::$app->params['wechat']);
         $menu = $app->menu;
         $buttons = [
             [
                 "type" => "click",
-                "name" => "最新活动",
-                "key"  => "zxhd"
+                "name" => "促销商品",
+                "key"  => "cxsp"
             ],
             [
-                "name"       => "菜单",
+                "type" => "view",
+                "name" => "在线商城",
+                 "url"  => "http://zinces.huxiyan.site/"
+            ],
+            [
+                "name"       => "个人中心",
                 "sub_button" => [
                     [
                         "type" => "view",
-                        "name" => "个人中心",
-                        "url"  => Url::to(['wechat/user'],true)
+                        "name" => "绑定账户",
+                        "url"  => Url::to(['wechat/login'],true),
                     ],
                     [
                         "type" => "view",
                         "name" => "我的订单",
-                        "url"  => Url::to(['wechat/order'],true)
+                        "url"  => Url::to(['wechat/order'],true),
                     ],
                     [
                         "type" => "view",
-                        "name" => "绑定账户",
-                        "url" => Url::to(['wechat/login'],true)
+                        "name" => "收货地址",
+                        "url"  => Url::to(['wechat/address'],true),
+                    ],
+                    [
+                        "type" => "view",
+                        "name" => "修改密码",
+                        "url" => Url::to(['wechat/test'],true),
                     ],
                 ],
             ],
         ];
         $menu->add($buttons);
-        //获取已设置的菜单（查询菜单）
-        $menus = $menu->all();
+        $menus=$menu->all();
         var_dump($menus);
     }
-
-    //我的订单
-    public function actionOrder()
-    {
-        //openid
-        $openid = \Yii::$app->session->get('openid');
-        if($openid == null){
-            //获取用户的基本信息（openid），需要通过微信网页授权
+    public function actionUser(){
+        //发起网页授权
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
             \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
-            //echo 'wechat-user';
             $app = new Application(\Yii::$app->params['wechat']);
-            //发起网页授权
             $response = $app->oauth->scopes(['snsapi_base'])
                 ->redirect();
-            $response->send();
+            $response->send(); // Laravel 里请使用：return $response;
         }
         //var_dump($openid);
-        //通过openid获取账号
-        $member = Member::findOne(['openid'=>$openid]);
-        if($member == null){
-            //该openid没有绑定任何账户
-            //引导用户绑定账户
-            return $this->redirect(['wechat/login']);
-        }else{
-            //已绑定账户
-            $orders = Order::findAll(['member_id'=>$member->id]);
-            var_dump($orders);
-        }
-    }
 
-    //个人中心
-    public function actionUser()
-    {
-        $openid = \Yii::$app->session->get('openid');
-        if($openid == null){
-            //获取用户的基本信息（openid），需要通过微信网页授权
-            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
-            //echo 'wechat-user';
-            $app = new Application(\Yii::$app->params['wechat']);
-            //发起网页授权
-            $response = $app->oauth->scopes(['snsapi_base'])
-                ->redirect();
-            $response->send();
-        }
-        var_dump($openid);
     }
-
-    //授权回调页
-    public function actionCallback()
-    {
+    public function actionCallback(){
         $app = new Application(\Yii::$app->params['wechat']);
-        $user = $app->oauth->user();
+          $user = $app->oauth->user();
         // $user 可以用的方法:
         // $user->getId();  // 对应微信的 OPENID
         // $user->getNickname(); // 对应微信的 nickname
@@ -203,52 +171,91 @@ class WechatController extends Controller{
         // $user->getAvatar(); // 头像网址
         // $user->getOriginal(); // 原始API返回的结果
         // $user->getToken(); // access_token， 比如用于地址共享时使用
-//        var_dump($user->getId());
-        //将openid放入session
+        //var_dump($user->getId());
         \Yii::$app->session->set('openid',$user->getId());
         return $this->redirect([\Yii::$app->session->get('redirect')]);
-
     }
-
-    public function actionTest()
-    {
-        \Yii::$app->session->removeAll();
-    }
-
-
-    //绑定用户账号   将openid和用户账号绑定
-    public function actionLogin()
-    {
-        $openid = \Yii::$app->session->get('openid');
-        if($openid == null){
-            //获取用户的基本信息（openid），需要通过微信网页授权
+    public function actionOrder(){
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
             \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
-            //echo 'wechat-user';
             $app = new Application(\Yii::$app->params['wechat']);
-            //发起网页授权
             $response = $app->oauth->scopes(['snsapi_base'])
                 ->redirect();
-            $response->send();
+            $response->send(); // Laravel 里请使用：return $response;
+        }
+        //var_dump($openid);
+         $member=Member::findOne(['openid'=>$openid]);
+        if ($member ==null){
+            return $this->redirect(['wechat/login']);
+        }else{
+            $orders=Order::findAll(['member_id'=>$member->id]);
+            var_dump($orders);
         }
 
-        //让用户登录，如果登录成功，将openid写入当前登录账户
-        $request = \Yii::$app->request;
-        if(\Yii::$app->request->isPost){
-            $user = Member::findOne(['username'=>$request->post('username')]);
-            if($user && \Yii::$app->security->validatePassword($request->post('password'),$user->password_hash)){
+    }
+    public function actionLogin(){
+
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
+            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
+            $app = new Application(\Yii::$app->params['wechat']);
+            $response = $app->oauth->scopes(['snsapi_base'])
+                ->redirect();
+            $response->send(); // Laravel 里请使用：return $response;
+        }
+        //var_dump($openid);
+        $request=\Yii::$app->request;
+        if (\Yii::$app->request->isPost){
+            $user=Member::findOne(['username'=>$request->post('username')]);
+            if ($user && \Yii::$app->security->validatePassword($request->post('password'),$user->password_hash)){
                 \Yii::$app->user->login($user);
-                //如果登录成功，将openid写入当前登录账户
                 Member::updateAll(['openid'=>$openid],'id='.$user->id);
-                if(\Yii::$app->session->get('redirect')) return $this->redirect([\Yii::$app->session->get('redirect')]);
-                echo '绑定成功';exit;
-            }else{
-                echo '登录失败';exit;
-            }
+                return $this->redirect(['wechat/order']);
+             }
         }
-
         return $this->renderPartial('login');
     }
-
-
-
+    public function actionTest(){
+        \Yii::$app->session->removeAll();
+    }
+    public function actionAddress(){
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
+            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
+            $app = new Application(\Yii::$app->params['wechat']);
+            $response = $app->oauth->scopes(['snsapi_base'])
+                ->redirect();
+            $response->send(); // Laravel 里请使用：return $response;
+        }
+        //var_dump($openid);
+        $member=Member::findOne(['openid'=>$openid]);
+        if ($member ==null){
+            return $this->redirect(['wechat/login']);
+        }else{
+            $orders=Order::findAll(['user_id'=>$member->id]);
+            var_dump($orders);
+        }
+    }
+    public function actionRepassword(){
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
+            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
+            $app = new Application(\Yii::$app->params['wechat']);
+            $response = $app->oauth->scopes(['snsapi_base'])
+                ->redirect();
+            $response->send(); // Laravel 里请使用：return $response;
+        }
+        //var_dump($openid);
+        $request=\Yii::$app->request;
+        if (\Yii::$app->request->isPost){
+            $user=Member::findOne(['openid'=>$openid]);
+            if ($user && \Yii::$app->security->validatePassword($request->post('old_password'),$user->password_hash)){
+                $newpassword=\Yii::$app->security->generatePasswordHash($request->post('new_password'));
+                Member::updateAll(['password_hash'=>$newpassword],'id='.$user->id);
+                return $this->redirect(['wechat/login']);
+            }
+        }
+        return $this->renderPartial('repassword');
+    }
 }

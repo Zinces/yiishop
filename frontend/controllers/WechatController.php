@@ -2,8 +2,11 @@
 namespace frontend\controllers;
 
 use EasyWeChat\Message\News;
+use frontend\models\Address;
 use frontend\models\Member;
 use frontend\models\Order;
+use frontend\models\OrderGoods;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Url;
 use yii\web\Controller;
 use EasyWeChat\Foundation\Application;
@@ -94,6 +97,9 @@ class WechatController extends Controller{
                                 'image'       => 'http://or9p5sqr2.bkt.clouddn.com//upload/48/f2/48f2a8380611d05710d50486cc70f4c06ae01e47.jpg',
                             ]);
                             return [$news1,$news2,$news3,$news4,$news5];
+                        case '解除绑定':
+                            return '点击解绑：'.Url::to(['wechat/delopenid'],true);
+
                     }
                     return $message->Content;
               }
@@ -139,8 +145,9 @@ class WechatController extends Controller{
                     [
                         "type" => "view",
                         "name" => "修改密码",
-                        "url" => Url::to(['wechat/test'],true),
+                        "url"  => Url::to(['wechat/repassword'],true),
                     ],
+
                 ],
             ],
         ];
@@ -190,7 +197,9 @@ class WechatController extends Controller{
             return $this->redirect(['wechat/login']);
         }else{
             $orders=Order::findAll(['member_id'=>$member->id]);
-            var_dump($orders);
+            $orders_id=ArrayHelper::map($orders,'id','id');
+            $models=OrderGoods::find()->where(['in','order_id',$orders_id])->all();
+            return $this->renderPartial('order',['models'=>$models]);
         }
 
     }
@@ -233,8 +242,8 @@ class WechatController extends Controller{
         if ($member ==null){
             return $this->redirect(['wechat/login']);
         }else{
-            $orders=Order::findAll(['user_id'=>$member->id]);
-            var_dump($orders);
+            $models=Address::findAll(['user_id'=>$member->id]);
+            return $this->renderPartial('address',['models'=>$models]);
         }
     }
     public function actionRepassword(){
@@ -253,9 +262,26 @@ class WechatController extends Controller{
             if ($user && \Yii::$app->security->validatePassword($request->post('old_password'),$user->password_hash)){
                 $newpassword=\Yii::$app->security->generatePasswordHash($request->post('new_password'));
                 Member::updateAll(['password_hash'=>$newpassword],'id='.$user->id);
-                return $this->redirect(['wechat/login']);
+                return $this->redirect(['wechat/order']);
             }
         }
         return $this->renderPartial('repassword');
+    }
+    public function actionDelopenid(){
+        $openid=\Yii::$app->session->get('openid');
+        if ($openid == null){
+            \Yii::$app->session->set('redirect',\Yii::$app->controller->action->uniqueId);
+            $app = new Application(\Yii::$app->params['wechat']);
+            $response = $app->oauth->scopes(['snsapi_base'])
+                ->redirect();
+            $response->send(); // Laravel 里请使用：return $response;
+        }
+        $member=Member::findOne(['openid'=>$openid]);
+        if ($member==null){
+            return $this->redirect(['wechat/login']);
+        }else{
+            Member::updateAll(['openid'=>null],'id='.$member->id);
+            return '解绑成功';
+        }
     }
 }
